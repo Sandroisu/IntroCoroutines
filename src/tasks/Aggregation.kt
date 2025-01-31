@@ -1,5 +1,6 @@
 package tasks
 
+import com.sun.jna.platform.win32.Netapi32Util
 import contributors.User
 
 /*
@@ -15,4 +16,7 @@ TODO: Write aggregation code.
  You can use 'Navigate | Test' menu action (note the shortcut) to navigate to the test.
 */
 fun List<User>.aggregate(): List<User> =
-    this
+    this.groupingBy { it.login }
+        .fold(0) { contributionsSum, user -> contributionsSum + user.contributions }
+        .map { loginContributionsMap -> User(loginContributionsMap.key, loginContributionsMap.value) }
+        .sortedByDescending { it.contributions }
